@@ -6,7 +6,7 @@ and a logging formatter class to handle sensitive data.
 
 import re
 import logging
-from typing import List
+from typing import List, Tuple
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -60,3 +60,26 @@ class RedactingFormatter(logging.Formatter):
         log_message = super().format(record)
         return filter_datum(self.fields, self.REDACTION, log_message,
                             self.SEPARATOR)
+
+
+# Define the PII_FIELDS tuple
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "ssn", "password", "phone")
+
+
+def get_logger() -> logging.Logger:
+    """
+    Creates and configures a logger named 'user_data' to handle sensitive logs.
+
+    Returns:
+        logging.Logger: Configured logger with RedactingFormatter.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=list(PII_FIELDS))
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    return logger
