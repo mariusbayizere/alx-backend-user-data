@@ -65,7 +65,7 @@ class RedactingFormatter(logging.Formatter):
 
 
 # Define the PII_FIELDS tuple
-PII_FIELDS: Tuple[str, ...] = ("name", "email", "ssn", "password", "phone")
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
 
 
 def get_logger() -> logging.Logger:
@@ -89,10 +89,10 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
-    Connects to a MySQL database using credentials stored  variables.
+    Connects to a MySQL database using credentials  environment variables.
 
     Returns:
-        mysql.connector.connection.MySQLConnection: connector object.
+        mysql.connector.connection.MySQLConnection: Database connector object.
     """
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
@@ -106,3 +106,27 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         database=db_name
     )
     return connection
+
+
+def main() -> None:
+    """
+    Main function that retrieves all rows in the users table and displays
+    them with sensitive data filtered.
+    """
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users;")
+
+    logger = get_logger()
+
+    for row in cursor:
+        # Create a log message string by joining key-value pairs
+        message = "; ".join(f"{key}={value}" for key, value in row.items())
+        logger.info(message)
+
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
