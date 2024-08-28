@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-encrypt_password module provides functions for securely hashing passwords.
+encrypt_password module provides functions for securely hashing passwords
+and validating them.
 """
 
 import bcrypt
@@ -8,7 +9,7 @@ import bcrypt
 
 def hash_password(password: str) -> bytes:
     """
-    Hashes a password using a salt and returns the hashed password  string.
+    Hashes a password using a salt and returns the hashed password as string.
 
     Args:
         password (str): The password to hash.
@@ -25,8 +26,24 @@ def hash_password(password: str) -> bytes:
     return hashed_password
 
 
+def is_valid(hashed_password: bytes, password: str) -> bool:
+    """
+    Validates that the provided password matches the hashed password.
+
+    Args:
+        hashed_password (bytes): The hashed password to validate against.
+        password (str): The password to validate.
+
+    Returns:
+        bool: True if the password matches, False otherwise.
+    """
+    # Validate the password using bcrypt
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+
+
 if __name__ == "__main__":
-    # Test the hash_password function
+    # Test the hash_password and is_valid functions
     password = "MyAmazingPassw0rd"
-    print(hash_password(password))
-    print(hash_password(password))
+    encrypted_password = hash_password(password)
+    print(encrypted_password)
+    print(is_valid(encrypted_password, password))
