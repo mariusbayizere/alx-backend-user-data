@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-filtered_logger module provides a function to obfuscate log messages
-and a logging formatter class to handle sensitive data.
+filtered_logger module provides functions and classes to handle sensitive data
+in logs and securely connect to a MySQL database.
 """
 
 import re
 import logging
 from typing import List, Tuple
+import mysql.connector
+import os
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -83,3 +85,24 @@ def get_logger() -> logging.Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Connects to a MySQL database using credentials stored  variables.
+
+    Returns:
+        mysql.connector.connection.MySQLConnection: connector object.
+    """
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    connection = mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=db_name
+    )
+    return connection
