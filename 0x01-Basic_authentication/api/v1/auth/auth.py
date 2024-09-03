@@ -20,10 +20,16 @@ class Auth:
         if not path.endswith('/'):
             path += '/'
 
-        # Check if the path is in excluded_paths
         for excluded_path in excluded_paths:
-            if excluded_path.endswith('/'):
-                if path == excluded_path:
+            if excluded_path.endswith('*'):
+                # Match the beginning of the path with the excluded path
+                if path.startswith(excluded_path[:-1]):
+                    return False
+            else:
+                if excluded_path.endswith('/'):
+                    if path == excluded_path:
+                        return False
+                elif path.rstrip('/') == excluded_path.rstrip('/'):
                     return False
 
         return True
