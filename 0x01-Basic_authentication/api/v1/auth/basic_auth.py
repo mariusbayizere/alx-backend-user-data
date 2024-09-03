@@ -111,7 +111,7 @@ class BasicAuth(Auth):
             request: The request object containing the Authorization header.
 
         Returns:
-            User: The User instance if credentials are valid, otherwise None.
+            User: The User instance credentials are valid, otherwise None.
         """
         auth_header = self.authorization_header(request)
         if auth_header is None:
