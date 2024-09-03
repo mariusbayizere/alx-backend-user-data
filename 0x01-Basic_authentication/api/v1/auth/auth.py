@@ -9,13 +9,21 @@ class Auth:
     """ Class to manage API authentication """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ Checks if a path requires authentication """
-        return False
+        """ Returns True if the path is the list of strings excluded_paths """
+        if path is None:
+            return True
 
-    def authorization_header(self, request=None) -> str:
-        """ Returns None - for now the request will be handled later """
-        return None
+        if excluded_paths is None or len(excluded_paths) == 0:
+            return True
 
-    def current_user(self, request=None) -> TypeVar('User'):
-        """ Returns None - user to be handled later """
-        return None
+        # Add a trailing slash to path if not present for comparison
+        if not path.endswith('/'):
+            path += '/'
+
+        # Check if the path is in excluded_paths
+        for excluded_path in excluded_paths:
+            if excluded_path.endswith('/'):
+                if path == excluded_path:
+                    return False
+
+        return True
