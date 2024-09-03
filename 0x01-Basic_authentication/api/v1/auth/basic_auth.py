@@ -4,6 +4,7 @@
 import base64
 from api.v1.auth.auth import Auth
 from models.user import User
+from typing import TypeVar
 
 
 class BasicAuth(Auth):
@@ -110,7 +111,7 @@ class BasicAuth(Auth):
             request: The request object containing the Authorization header.
 
         Returns:
-            User: The User instance if the credentials valid, otherwise None.
+            User: The User instance if credentials are valid, otherwise None.
         """
         auth_header = self.authorization_header(request)
         if auth_header is None:
