@@ -7,6 +7,7 @@ from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import CORS
 from api.v1.auth.auth import Auth
+from api.v1.auth.basic_auth import BasicAuth  # Import BasicAuth class
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
@@ -15,7 +16,10 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 AUTH_TYPE = getenv("AUTH_TYPE", None)
 
-if AUTH_TYPE == "auth":
+# Check AUTH_TYPE and instantiate the correct class
+if AUTH_TYPE == "basic_auth":
+    auth = BasicAuth()
+else:
     auth = Auth()
 
 
@@ -37,7 +41,6 @@ def before_request():
     if auth.authorization_header(request) is None:
         abort(401)
 
-    # Assuming `current_user` method will be implemented later
     if auth.current_user(request) is None:
         abort(403)
 
