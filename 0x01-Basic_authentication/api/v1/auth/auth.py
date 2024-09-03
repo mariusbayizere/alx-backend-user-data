@@ -9,7 +9,7 @@ class Auth:
     """ Class to manage API authentication """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ Returns True if the path is the list of strings excluded_paths """
+        """ Returns True if the path requires authentication """
         if path is None:
             return True
 
@@ -27,3 +27,11 @@ class Auth:
                     return False
 
         return True
+
+    def authorization_header(self, request=None) -> str:
+        """ Returns the value of the Authorization header if present """
+        if request is None:
+            return None
+        if 'Authorization' not in request.headers:
+            return None
+        return request.headers.get('Authorization')
