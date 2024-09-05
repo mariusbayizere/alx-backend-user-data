@@ -3,6 +3,7 @@
 
 from flask import request
 from typing import List, TypeVar
+import os
 
 
 class Auth:
@@ -41,3 +42,14 @@ class Auth:
         if 'Authorization' not in request.headers:
             return None
         return request.headers.get('Authorization')
+
+    def session_cookie(self, request=None):
+        """ Returns the value of the session cookie from the request """
+        if request is None:
+            return None
+
+        # Get the session name from the environment variable
+        session_name = os.getenv('SESSION_NAME', '_my_session_id')
+
+        # Return the cookie value with the key as session_name
+        return request.cookies.get(session_name)
